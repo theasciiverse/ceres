@@ -183,6 +183,11 @@ impl Pico {
     }
 
     pub fn spr(&mut self, n: f64, x: f64, y: f64, flip_x: bool, flip_y: bool) {
+        self.spr_swap(n, x, y, flip_x, flip_y, None);
+    }
+
+    /// `spr` with one colour swapped, as `pal(a, b)` around a `spr` call.
+    pub fn spr_swap(&mut self, n: f64, x: f64, y: f64, flip_x: bool, flip_y: bool, swap: Option<(u8, u8)>) {
         let n = n as i32;
         if n < 0 || n as usize >= self.sprites.len() {
             return;
@@ -193,7 +198,12 @@ impl Pico {
             for px in 0..8 {
                 let sx = if flip_x { 7 - px } else { px };
                 let sy = if flip_y { 7 - py } else { py };
-                let c = s[sx + sy * 8];
+                let mut c = s[sx + sy * 8];
+                if let Some((from, to)) = swap {
+                    if c == from {
+                        c = to;
+                    }
+                }
                 if c != CLEAR {
                     self.pset(x + px as i32, y + py as i32, c);
                 }
@@ -273,6 +283,7 @@ fn load_sprites() -> Vec<[u8; 64]> {
             sprites.push(std::array::from_fn(|i| px[tx * 8 + i % 8 + (ty * 8 + i / 8) * w]));
         }
     }
+    crate::art::paint(&mut sprites, CLEAR);
     sprites
 }
 

@@ -67,13 +67,7 @@ impl Hair {
     }
 
     fn draw(&mut self, e: &mut Pico, x: f64, y: f64, facing: i32, djump: i32, frames: i32) {
-        let c = if djump == 1 {
-            8
-        } else if djump == 2 {
-            7 + ((frames / 3) % 2) * 4
-        } else {
-            12
-        };
+        let c = crate::art::hair_colour(djump, frames);
         let mut last = v2(x + 4.0 - (facing * 2) as f64, y + if e.btn(DOWN) { 4.0 } else { 3.0 });
         for h in &mut self.nodes {
             h.0 += (last.x - h.0) / 1.5;
@@ -1226,21 +1220,13 @@ impl Classic {
         }
     }
 
+    /// The climber, hair in the colour of the dash state (the Lua's
+    /// `set_hair_color`, a palette swap).
     fn draw_player(&mut self, i: usize, djump: i32) {
-        let push = if djump == 2 {
-            if (self.frames / 3) % 2 == 0 {
-                10 * 16
-            } else {
-                9 * 16
-            }
-        } else if djump == 0 {
-            8 * 16
-        } else {
-            0
-        };
         let o = &self.objects[i];
-        let (s, x, y, fx, fy) = (o.spr + push as f64, o.x, o.y, o.flip_x, o.flip_y);
-        self.e.spr(s, x, y, fx, fy);
+        let (s, x, y, fx, fy) = (o.spr, o.x, o.y, o.flip_x, o.flip_y);
+        let hair = crate::art::hair_colour(djump, self.frames);
+        self.e.spr_swap(s, x, y, fx, fy, Some((crate::art::HAIR, hair)));
     }
 
     fn draw_message(&mut self, i: usize) {

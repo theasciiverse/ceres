@@ -1,3 +1,4 @@
+mod art;
 mod audio;
 mod classic;
 mod font;

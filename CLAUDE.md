@@ -122,7 +122,9 @@ logo is already ours (CERES, painted in `pico.rs`), and so is the font.
 
 ## Next
 
-1. Art: ask Noel Berry, or draw our own sheet.
+1. Art: drawing our own sheet in `src/art.rs`, slot by slot over the stand-in.
+   Done: the climber (Ceres: blond, plum dress; hair blond with a dash,
+   red when spent, white and gold flashing with two).
 2. Gamepad play-test; listen through the soundtrack and tune it.
 
 ## Status
