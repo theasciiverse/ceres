@@ -1,0 +1,24 @@
+[package]
+name = "ceres"
+version = "0.1.0"
+edition = "2021"
+description = "Asciiverse restoration of Celeste Classic: precision mountain climbing in half-block pixels, Rust + Ratatui"
+
+[[bin]]
+name = "ceres"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = "0.30"
+log = "0.4"
+env_logger = "0.11"
+png = "0.17"
+rodio = { version = "0.22", default-features = false, features = ["playback"] }
+gilrs = { version = "0.11", optional = true }
+
+[features]
+default = ["gamepad"]
+gamepad = ["dep:gilrs"]
+
+[profile.release]
+debug = 1
