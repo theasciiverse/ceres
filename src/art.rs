@@ -40,6 +40,23 @@ const CLIMBER: [(usize, [&str; 8]); 7] = [
     (7, ["........", "..aaaa..", ".aaf1f1.", ".aaffff.", "..aaff..", "..2222..", ".f2222f.", "..5..5.."]),
 ];
 
+/// The collectible: cherries on joined stems, with a leaf. Red (8) with a
+/// pink shine (e) and plum shade (2), green stems (3) and leaf (b).
+const CHERRIES: [&str; 8] = ["....3b..", "...33bb.", "..3..3..", ".3....3.", "e88..e88", "888..888", "882..882", ".2....2."];
+
+const COLLECTIBLES: [(usize, [&str; 8]); 5] = [
+    // 26: cherries; also the icon on the summit score card
+    (26, CHERRIES),
+    // 28: flying cherries
+    (28, CHERRIES),
+    // 45-47: a wing, drawn on the right of the flying cherries and mirrored
+    // on the left; 45 is the one the game shows (the original's quirk), the
+    // others complete the flap
+    (45, ["........", "....777.", "..77776.", ".7766...", "........", "........", "........", "........"]),
+    (46, ["........", "........", "........", ".777777.", "..66776.", "........", "........", "........"]),
+    (47, ["........", "........", "........", ".7766...", "..77776.", "....777.", "........", "........"]),
+];
+
 fn hex(c: u8) -> Option<u8> {
     match c {
         b'0'..=b'9' => Some(c - b'0'),
@@ -51,7 +68,7 @@ fn hex(c: u8) -> Option<u8> {
 /// Paint every sprite drawn so far into `sprites` (`clear` is the
 /// transparent index).
 pub fn paint(sprites: &mut [[u8; 64]], clear: u8) {
-    for (slot, rows) in CLIMBER {
+    for (slot, rows) in CLIMBER.into_iter().chain(COLLECTIBLES) {
         let s = &mut sprites[slot];
         for (y, row) in rows.iter().enumerate() {
             assert_eq!(row.len(), 8, "sprite {slot} row {y}");

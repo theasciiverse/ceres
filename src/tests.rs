@@ -167,7 +167,7 @@ fn screenshots() {
         g.draw();
     }
     save(&g, "title");
-    for (level, frames, name) in [(1, 60, "level1"), (5, 60, "level5"), (22, 60, "level22"), (31, 45, "summit")] {
+    for (level, frames, name) in [(1, 60, "level1"), (3, 40, "level3"), (4, 35, "level4"), (5, 60, "level5"), (22, 60, "level22"), (31, 45, "summit")] {
         let tas = load_tas(level);
         let mut g = Classic::new(3);
         let index = level as i32 - 1;

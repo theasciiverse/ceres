@@ -124,7 +124,8 @@ logo is already ours (CERES, painted in `pico.rs`), and so is the font.
 
 1. Art: drawing our own sheet in `src/art.rs`, slot by slot over the stand-in.
    Done: the climber (Ceres: blond, plum dress; hair blond with a dash,
-   red when spent, white and gold flashing with two).
+   red when spent, white and gold flashing with two), and the cherries
+   (the collectible, plain and winged).
 2. Gamepad play-test; listen through the soundtrack and tune it.
 
 ## Status
