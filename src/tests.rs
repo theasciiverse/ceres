@@ -167,7 +167,15 @@ fn screenshots() {
         g.draw();
     }
     save(&g, "title");
-    for (level, frames, name) in [(1, 60, "level1"), (3, 40, "level3"), (4, 35, "level4"), (5, 60, "level5"), (13, 40, "level13"), (22, 60, "level22"), (25, 40, "level25"), (31, 45, "summit")] {
+    // every sprite slot, 16 to a row, on dark blue
+    g.e.camera(0.0, 0.0);
+    g.e.pal_reset();
+    g.e.rectfill(0.0, 0.0, 127.0, 127.0, 1.0);
+    for n in 0..128 {
+        g.e.spr(n as f64, ((n % 16) * 8) as f64, ((n / 16) * 8) as f64, false, false);
+    }
+    save(&g, "sheet");
+    for (level, frames, name) in [(1, 60, "level1"), (3, 40, "level3"), (4, 35, "level4"), (5, 60, "level5"), (7, 40, "level7"), (12, 40, "level12"), (13, 40, "level13"), (15, 40, "level15"), (22, 60, "level22"), (25, 40, "level25"), (31, 45, "summit")] {
         let tas = load_tas(level);
         let mut g = Classic::new(3);
         let index = level as i32 - 1;

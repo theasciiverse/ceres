@@ -85,7 +85,7 @@ with the Panzer repeat heuristic.
   (the soundtrack), `src/main.rs`.
 - `data/map.bin`: the 128x64 tilemap decoded from `Emulator.cs`; identical
   byte for byte to the original cart's `__map__`/`__gfx__` data.
-- `assets/atlas.png`: Noel Berry's sprite sheet, a stand-in (see Art).
+- `src/art.rs`: every sprite (see Art).
 - `tests/tas-any/`: the community any% TAS, one file per level (fixtures).
 - `tools/lua-reference/`: runs the original Lua headlessly for frame diffs.
 
@@ -108,27 +108,27 @@ modelled).
   "the actual commercial Celeste game or assets".
 - The original PICO-8 cart on the Lexaloffle BBS (tid=2145) is marked "No
   License", so the MIT repo is the route to the levels, and it covers them.
-- The sprite sheet (`Graphics/atlas.png`, an image file) is the one item
-  that may count as an asset; see below.
+- The sprite sheet (`Graphics/atlas.png`, an image file) was the one item
+  that may count as an asset; Ceres no longer uses it (see Art).
 
 ## Art
 
-`assets/atlas.png` is still Noel Berry's sprite sheet from the MIT repo,
-whose README says the licence covers the code, not "the actual commercial
-Celeste game or assets". It is a stand-in until either Noel Berry says yes
-(others have asked; CelesteNext was made with his permission) or we draw our
-own 8x8 sprites into the same sheet layout (only the PNG changes). The title
-logo is already ours (CERES, painted in `pico.rs`), and so is the font.
+All ours (2026-10-05), drawn in `src/art.rs` and built at start-up; there is
+no image file, and nothing of Noel Berry's sprite sheet is left (it was a
+stand-in until then). Ceres herself (blond, plum dress; hair blond with a
+dash, red when spent, white and gold flashing with two), cherries for the
+collectible, packed snow, ice, background rock and ice-shard spikes
+(generated from each tile's open sides), the objects (springs, balloons,
+crumbling clods, platforms, key and chest, big chest, a golden sun-seed for
+the orb, the summit pennant), scenery (firs, grass, wheat, an engraved
+memorial stone), the title's CERES logo and mountain lines, and the font.
+The busiest tiles have variants picked by map position when drawn
+(`art::variants`), which changes only the picture, never the tile numbers
+the physics reads.
 
 ## Next
 
-1. Art: drawing our own sheet in `src/art.rs`, slot by slot over the stand-in.
-   Done: the climber (Ceres: blond, plum dress; hair blond with a dash,
-   red when spent, white and gold flashing with two), and the cherries
-   (the collectible, plain and winged), and the terrain: packed snow,
-   ice, background rock and ice-shard spikes, generated from each tile's
-   open sides.
-2. Gamepad play-test; listen through the soundtrack and tune it.
+1. Gamepad play-test; listen through the soundtrack and tune it.
 
 ## Status
 

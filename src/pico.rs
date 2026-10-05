@@ -42,7 +42,6 @@ const FLAGS: [u8; 128] = [
 ];
 
 static MAP: &[u8; 8192] = include_bytes!("../data/map.bin");
-static ATLAS: &[u8] = include_bytes!("../assets/atlas.png");
 
 /// Buttons, in PICO-8 order.
 pub const LEFT: usize = 0;
@@ -58,6 +57,10 @@ pub struct Pico {
     pub pal: [u8; 16],
     cam: (i32, i32),
     sprites: Vec<[u8; 64]>,
+    /// Alternative looks for a map tile (sprite indices past 127), picked
+    /// by map position when drawing the map; the tile's number, and so its
+    /// flags and the physics, stay the same.
+    variants: Vec<Vec<usize>>,
     pub btn: [bool; 6],
     rng: u64,
     /// Sound effects requested since the caller last drained them.
@@ -68,16 +71,23 @@ pub struct Pico {
 
 impl Pico {
     pub fn new(seed: u64) -> Pico {
-        Pico {
+        let mut p = Pico {
             screen: [0; W * W],
             pal: std::array::from_fn(|i| i as u8),
             cam: (0, 0),
-            sprites: load_sprites(),
+            sprites: Vec::new(),
+            variants: vec![Vec::new(); 128],
             btn: [false; 6],
             rng: seed | 1,
             sfx: Vec::new(),
             music: Vec::new(),
+        };
+        p.sprites = load_sprites();
+        for (base, look) in crate::art::variants(CLEAR) {
+            p.variants[base].push(p.sprites.len());
+            p.sprites.push(look);
         }
+        p
     }
 
     // ------------------------------------------------------------- maths
@@ -217,8 +227,13 @@ impl Pico {
         for x in 0..mw {
             for y in 0..mh {
                 let tile = self.mget(x + mx, y + my);
-                if (tile as usize) < self.sprites.len() && self.fget(tile, flag) {
-                    self.spr(tile as f64, (tx + x * 8) as f64, (ty + y * 8) as f64, false, false);
+                if (tile as usize) < 128 && self.fget(tile, flag) {
+                    let alts = &self.variants[tile as usize];
+                    let look = match crate::art::pick(x + mx, y + my, alts.len()) {
+                        0 => tile as usize,
+                        k => alts[k - 1],
+                    };
+                    self.spr(look as f64, (tx + x * 8) as f64, (ty + y * 8) as f64, false, false);
                 }
             }
         }
@@ -260,22 +275,12 @@ pub fn sign(v: f64) -> i32 {
 
 // ----------------------------------------------------------------- sprites
 
+/// The sprite sheet, all of it ours: built here from `art.rs` and the
+/// title logo below, 16x8 sprites of 8x8 pixels.
 fn load_sprites() -> Vec<[u8; 64]> {
-    let decoder = png::Decoder::new(std::io::Cursor::new(ATLAS));
-    let mut reader = decoder.read_info().expect("atlas.png header");
-    let mut buf = vec![0; reader.output_buffer_size()];
-    let info = reader.next_frame(&mut buf).expect("atlas.png pixels");
-    assert_eq!(info.color_type, png::ColorType::Rgba, "atlas.png must be RGBA");
-    let (w, h) = (info.width as usize, info.height as usize);
-    let mut px: Vec<u8> = (0..w * h)
-        .map(|i| {
-            let p = &buf[i * 4..i * 4 + 4];
-            if p[3] == 0 {
-                return CLEAR;
-            }
-            PALETTE.iter().position(|&c| c == (p[0], p[1], p[2])).unwrap_or(0) as u8
-        })
-        .collect();
+    let (w, h) = (128, 64);
+    let mut px = vec![CLEAR; w * h];
+    crate::art::paint_title(&mut px, w, CLEAR);
     paint_logo(&mut px, w);
     let mut sprites = Vec::new();
     for ty in 0..h / 8 {
@@ -287,19 +292,10 @@ fn load_sprites() -> Vec<[u8; 64]> {
     sprites
 }
 
-/// The title logo spells our name: clear the seven letters in the sheet and
-/// paint CERES in the same style (light grey tops, lavender below).
+/// The title logo: CERES, light grey tops and lavender below, over the
+/// mountain lines from `art.rs`.
 fn paint_logo(px: &mut [u8], w: usize) {
     const TOP: usize = 44;
-    for k in 0..7 {
-        for y in TOP..TOP + 7 {
-            for x in 72 + k * 8..72 + k * 8 + 7 {
-                if matches!(px[x + y * w], 6 | 13) {
-                    px[x + y * w] = CLEAR;
-                }
-            }
-        }
-    }
     const C: [&str; 7] = [".66666.", "6666666", "66...66", "dd.....", "dd...dd", "ddddddd", ".ddddd."];
     const E: [&str; 7] = ["666666.", "6666666", "66.....", "dddd...", "dd.....", "dddddd.", "ddddddd"];
     const R: [&str; 7] = ["666666.", "6666666", "66...66", "dddddd.", "dd.dd..", "dd..dd.", "dd...dd"];
