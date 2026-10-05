@@ -121,4 +121,5 @@ balloons, springs, crumbling floors, moving platforms, the big chest and the
 second dash, the summit flag with time and deaths; synthesised sound
 effects; kitty-protocol and gamepad input; pause menu (screen shake, sound).
 Run: `cargo run --release` (`--level N`, `--no-shake`, `--mute`;
-session log with `RUST_LOG=debug ceres 2>ceres.log`). Not a git repo yet.
+session log with `RUST_LOG=debug ceres 2>ceres.log`). Own git repo, private
+at github.com/theasciiverse/ceres.
