@@ -81,7 +81,8 @@ with the Panzer repeat heuristic.
   turn-based `sin`/`cos`, floored `%`). Repaints the title logo as CERES.
 - `src/render.rs`: half-block renderer, 1:1 at 128x64 cells, whole-number
   zoom above, nearest-pixel shrink below. `src/font.rs`: our own 3x5 font.
-- `src/input.rs`, `src/audio.rs` (synthesised effects), `src/main.rs`.
+- `src/input.rs`, `src/audio.rs` (synthesised effects), `src/music.rs`
+  (the soundtrack), `src/main.rs`.
 - `data/map.bin`: the 128x64 tilemap decoded from `Emulator.cs`; identical
   byte for byte to the original cart's `__map__`/`__gfx__` data.
 - `assets/atlas.png`: Noel Berry's sprite sheet, a stand-in (see Art).
@@ -99,6 +100,17 @@ frames, largest difference 0. The simulation uses `f64` like picolove's
 Lua, which the TAS was made on (real PICO-8 is 16.16 fixed point; not
 modelled).
 
+## What the licences cover (checked 2026-10-05)
+
+- Code and levels: MIT. The level map is not an asset file but a string
+  constant in `Emulator.cs`, source code in Noel Berry's repo, so it falls
+  under the repo's MIT licence like `Classic.cs`. The README's exclusion is
+  "the actual commercial Celeste game or assets".
+- The original PICO-8 cart on the Lexaloffle BBS (tid=2145) is marked "No
+  License", so the MIT repo is the route to the levels, and it covers them.
+- The sprite sheet (`Graphics/atlas.png`, an image file) is the one item
+  that may count as an asset; see below.
+
 ## Art
 
 `assets/atlas.png` is still Noel Berry's sprite sheet from the MIT repo,
@@ -111,15 +123,17 @@ logo is already ours (CERES, painted in `pico.rs`), and so is the font.
 ## Next
 
 1. Art: ask Noel Berry, or draw our own sheet.
-2. Music: synthesised, our own (music calls are logged and ignored now).
-3. Gamepad play-test; terminal play-test in Ghostty.
+2. Gamepad play-test; listen through the soundtrack and tune it.
 
 ## Status
 
 Playable, 2026-10-05: all 31 levels, title, berries, keys and chests,
 balloons, springs, crumbling floors, moving platforms, the big chest and the
 second dash, the summit flag with time and deaths; synthesised sound
-effects; kitty-protocol and gamepad input; pause menu (screen shake, sound).
+effects and an original synthesised soundtrack (title, climb, wind, Old
+Site, summit, cued where the original changes music); kitty-protocol and
+gamepad input; square-pixel correction from the font's real cell shape
+(`a` in the menu, `--sharp` to start sharp); pause menu.
 Run: `cargo run --release` (`--level N`, `--no-shake`, `--mute`;
 session log with `RUST_LOG=debug ceres 2>ceres.log`). Own git repo, private
 at github.com/theasciiverse/ceres.

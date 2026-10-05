@@ -204,7 +204,7 @@ pub struct Classic {
     pause_player: bool,
     flash_bg: bool,
     music_timer: i32,
-    new_bg: bool,
+    pub new_bg: bool,
     pub frames: i32,
     pub seconds: i32,
     pub minutes: i32,

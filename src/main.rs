@@ -2,6 +2,7 @@ mod audio;
 mod classic;
 mod font;
 mod input;
+mod music;
 mod pico;
 mod render;
 #[cfg(test)]
@@ -60,7 +61,7 @@ fn main() -> io::Result<()> {
 
     // open audio before the alternate screen, so any ALSA chatter lands above it
     let mut audio = audio::Audio::new(args.iter().any(|a| a == "--mute"));
-    log::info!("audio available {} muted {}", audio.available(), audio.muted);
+    log::info!("audio available {} muted {}", audio.available(), audio.muted());
 
     let mut terminal = ratatui::init();
     let kitty = supports_keyboard_enhancement().unwrap_or(false);
@@ -76,6 +77,19 @@ fn main() -> io::Result<()> {
     let mut game = Classic::new(seed);
     game.screen_shake = !args.iter().any(|a| a == "--no-shake");
     if let Some(l) = level {
+        // what a climb from the start would have by now: the orb's second
+        // dash and pink sky after level 22, and that stretch's music
+        if l > 21 {
+            game.max_djump = 2;
+            game.new_bg = true;
+        }
+        game.e.music.clear();
+        game.e.music(match l {
+            0..=10 => 0,
+            12..=20 => 20,
+            22..=29 => 10,
+            _ => 30,
+        });
         game.load_room(l % 8, l / 8);
     }
     let screen = if kitty || input.pad_name.is_some() { Screen::Play } else { Screen::Notice };
@@ -152,8 +166,8 @@ fn run(terminal: &mut ratatui::DefaultTerminal, game: &mut Classic, input: &mut 
                     quit_armed = true;
                 }
                 (Screen::Menu, Cmd::Mute) | (Screen::Play, Cmd::Mute) => {
-                    audio.muted = !audio.muted;
-                    log::info!("muted {}", audio.muted);
+                    audio.set_muted(!audio.muted());
+                    log::info!("muted {}", audio.muted());
                 }
                 (Screen::Menu, Cmd::Aspect) => {
                     square = !square;
@@ -221,7 +235,7 @@ fn run(terminal: &mut ratatui::DefaultTerminal, game: &mut Classic, input: &mut 
                         "r    restart from the title".into(),
                         format!("k    screen shake: {}", if game.screen_shake { "on" } else { "off" }),
                         format!("a    pixels: {}", if square { "square" } else { "sharp" }),
-                        format!("f8   sound: {}", if audio.muted { "off" } else { "on" }),
+                        format!("f8   sound: {}", if audio.muted() { "off" } else { "on" }),
                         if quit_armed { "q    press again to quit".into() } else { "q    quit".into() },
                         String::new(),
                         "arrows move  z jump  x dash".into(),

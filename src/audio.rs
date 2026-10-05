@@ -3,7 +3,7 @@
 //! Each effect is written like a PICO-8 sfx: a row of steps, each a pitch,
 //! a waveform and a volume, played at a fixed speed. They are our own
 //! sounds, made for the moments the game asks for by PICO-8 sfx number.
-//! Music is not written yet; music requests are logged and ignored.
+//! Music is in `music.rs`, one endless source on the same mixer.
 //!
 //! Without an audio device, or with `--mute`, every call does nothing.
 
@@ -11,6 +11,9 @@ use rodio::buffer::SamplesBuffer;
 use rodio::{MixerDeviceSink, Source};
 use std::collections::HashMap;
 use std::num::NonZero;
+use std::sync::{Arc, Mutex};
+
+use crate::music::{self, Band, Ctrl};
 
 const SR: u32 = 44_100;
 const SRF: f32 = SR as f32;
@@ -31,7 +34,8 @@ type Step = (f32, Wave, f32);
 pub struct Audio {
     sink: Option<MixerDeviceSink>,
     bank: HashMap<u8, SamplesBuffer>,
-    pub muted: bool,
+    music: Arc<Mutex<Ctrl>>,
+    muted: bool,
 }
 
 impl Audio {
@@ -47,7 +51,13 @@ impl Audio {
             }
         };
         let bank = if sink.is_some() { SFX.iter().map(|&n| (n, buffer(render(n)))).collect() } else { HashMap::new() };
-        Audio { sink, bank, muted }
+        let music = Arc::new(Mutex::new(Ctrl::default()));
+        if let Some(s) = &sink {
+            s.mixer().add(Band::new(music.clone()));
+        }
+        let mut a = Audio { sink, bank, music, muted: false };
+        a.set_muted(muted);
+        a
     }
 
     pub fn available(&self) -> bool {
@@ -63,7 +73,19 @@ impl Audio {
     }
 
     pub fn music(&mut self, n: i32) {
-        log::debug!("music {n} (not written yet)");
+        log::debug!("music {n}");
+        music::request(&self.music, n);
+    }
+
+    pub fn muted(&self) -> bool {
+        self.muted
+    }
+
+    pub fn set_muted(&mut self, muted: bool) {
+        self.muted = muted;
+        if let Ok(mut c) = self.music.lock() {
+            c.muted = muted;
+        }
     }
 }
 
