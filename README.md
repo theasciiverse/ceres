@@ -18,9 +18,19 @@ tokens, the whole sprite sheet and map, 63 of 64 sounds). It grew into the
 acclaimed Celeste (2018). Ceres restores it for the terminal: their code and
 levels, new art and music.
 
+## Play
+
+With [av](https://asciiverse.sh), the Asciiverse client:
+
 ```
-cargo run --release
+av install ceres
+av play ceres
 ```
+
+Or download the archive for your system from this repository's Releases,
+unpack it and run `./ceres` (`ceres.exe` on Windows).
+
+To build it yourself: `cargo run --release`.
 
 Needs a terminal that reports key releases (the kitty keyboard protocol:
 kitty, foot, WezTerm, Ghostty, Alacritty, iTerm2 and others), or a gamepad.
