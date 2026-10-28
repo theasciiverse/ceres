@@ -2,6 +2,7 @@
 name = "ceres"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
 description = "Asciiverse restoration of Celeste Classic: precision mountain climbing in half-block pixels, Rust + Ratatui"
 
 [[bin]]

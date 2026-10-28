@@ -58,3 +58,8 @@ Session log for bug reports: `RUST_LOG=debug ceres 2>ceres.log`
 Celeste Classic is by Maddy Thorson and Noel Berry (PICO-8, 2015). The code
 and levels come from Noel Berry's C# port (github.com/NoelFB/Celeste, MIT
 licence), checked against the original Lua. The art and music are new.
+
+## Licence
+
+MIT; see [LICENSE](LICENSE), which also carries Noel Berry's MIT notice for
+the code and levels.
