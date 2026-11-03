@@ -1,6 +1,6 @@
 [package]
 name = "ceres"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 license = "MIT"
 description = "Asciiverse restoration of Celeste Classic: precision mountain climbing in half-block pixels, Rust + Ratatui"
@@ -14,7 +14,7 @@ ratatui = "0.30"
 log = "0.4"
 env_logger = "0.11"
 rodio = { version = "0.22", default-features = false, features = ["playback"] }
-gilrs = { version = "0.11", optional = true }
+gilrs = { version = "0.11", optional = true, default-features = false, features = ["xinput"] }
 
 [dev-dependencies]
 png = "0.17"
